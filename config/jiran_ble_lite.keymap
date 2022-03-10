@@ -15,7 +15,7 @@
             label = "dpgd";
             #binding-cells = <0>;
             bindings = <&kp ESC>, <&kp GRAVE>;
-            mods = <(MOD_LCTRL|MOD_LSFT|MOD_RCTRL|MOD_RSFT)>;
+            mods = <(MOD_LCTL|MOD_LSFT|MOD_RCTL|MOD_RSFT)>;
         };
     };
 
