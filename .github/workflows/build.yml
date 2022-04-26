@@ -5,26 +5,10 @@ name: Build
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build Test
+    name: Build
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Cache west modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-zephyr-modules
-        with:
-          path: |
-            modules/
-            tools/
-            zephyr/
-            bootloader/
-            zmk/
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('manifest-dir/west.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
       - name: West Init
         uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
         id: west-init
@@ -50,6 +34,8 @@ jobs:
         id: west-build-jiran_ble_lite-left
         with:
           args: 'build "-s zmk/app -b jiran_ble_lite_left -- -DZMK_CONFIG=/github/workspace/config"'
+      - name: Jiran BLE Lite Left Kconfig file
+        run: cat build/zephyr/.config | grep -v "^#" | grep -v "^$"
       - name: Rename zmk.uf2
         run: cp build/zephyr/zmk.uf2 jiran_ble_lite_left.uf2
       - name: Archive (Jiran BLE Lite Left)
@@ -62,6 +48,8 @@ jobs:
         id: west-build-jiran_ble_lite-right
         with:
           args: 'build "--pristine -s zmk/app -b jiran_ble_lite_right -- -DZMK_CONFIG=/github/workspace/config"'
+      - name: Jiran BLE Lite Right Kconfig file
+        run: cat build/zephyr/.config | grep -v "^#" | grep -v "^$"
       - name: Rename zmk.uf2
         run: cp build/zephyr/zmk.uf2 jiran_ble_lite_right.uf2
       - name: Archive (Jiran BLE Lite Right)
