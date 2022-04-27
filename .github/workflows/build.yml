@@ -1,89 +1,99 @@
-on: [push, pull_request, workflow_dispatch]
-
-name: Build
-
-jobs:
-  matrix:
-    runs-on: ubuntu-latest
-    name: Fetch Build Keyboards
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Install yaml2json
-        run: python3 -m pip install remarshal
-      - id: set-matrix
-        name: Fetch Build Matrix
-        run: |
-          matrix=$(yaml2json build.yaml | jq -c .)
-          yaml2json build.yaml
-          echo "::set-output name=matrix::${matrix}"
-  build:
-    runs-on: ubuntu-latest
-    container:
-      image: zmkfirmware/zmk-build-arm:stable
-    needs: matrix
+--- 
+jobs: 
+  build: 
+    container: 
+      image: "zmkfirmware/zmk-build-arm:stable"
     name: Build
-    strategy:
-      fail-fast: false
-      matrix: ${{fromJson(needs.matrix.outputs.matrix)}}
-    steps:
-      - name: Prepare variables
+    needs: matrix
+    runs-on: ubuntu-latest
+    steps: 
+      - 
         id: variables
+        name: "Prepare variables"
         run: |
-          if [ -n "${{ matrix.shield }}" ]; then
-            EXTRA_CMAKE_ARGS="-DSHIELD=${{ matrix.shield }}"
-            ARTIFACT_NAME="${{ matrix.shield }}-${{ matrix.board }}-zmk"
-            DISPLAY_NAME="${{ matrix.shield }} - ${{ matrix.board }}"
-          else
-            EXTRA_CMAKE_ARGS=
-            DISPLAY_NAME="${{ matrix.board }}"
-            ARTIFACT_NAME="${{ matrix.board }}-zmk"
-          fi
-          echo ::set-output name=extra-cmake-args::${EXTRA_CMAKE_ARGS}
-          echo ::set-output name=artifact-name::${ARTIFACT_NAME}
-          echo ::set-output name=display-name::${DISPLAY_NAME}
-      - name: Checkout
+            if [ -n "${{ matrix.shield }}" ]; then
+              EXTRA_CMAKE_ARGS="-DSHIELD=${{ matrix.shield }}"
+              ARTIFACT_NAME="${{ matrix.shield }}-${{ matrix.board }}-zmk"
+              DISPLAY_NAME="${{ matrix.shield }} - ${{ matrix.board }}"
+            else
+              EXTRA_CMAKE_ARGS=
+              DISPLAY_NAME="${{ matrix.board }}"
+              ARTIFACT_NAME="${{ matrix.board }}-zmk"
+            fi
+            echo ::set-output name=extra-cmake-args::${EXTRA_CMAKE_ARGS}
+            echo ::set-output name=artifact-name::${ARTIFACT_NAME}
+            echo ::set-output name=display-name::${DISPLAY_NAME}
+      - 
+        name: Checkout
         uses: actions/checkout@v2
-      - name: Cache west modules
-        uses: actions/cache@v2
-        env:
+      - 
+        env: 
           cache-name: cache-zephyr-modules
-        with:
+        name: "Cache west modules"
+        uses: actions/cache@v2
+        with: 
+          key: "${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('manifest-dir/west.yml') }}"
           path: |
-            modules/
-            tools/
-            zephyr/
-            bootloader/
-            zmk/
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('manifest-dir/west.yml') }}
+              modules/
+              tools/
+              zephyr/
+              bootloader/
+              zmk/
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: West Init
-        run: west init -l config
-      - name: West Update
-        run: west update
-      - name: West Zephyr export
-        run: west zephyr-export
-
-      - name: West Build (Jiran BLE Lite Left)
+              ${{ runner.os }}-build-${{ env.cache-name }}-
+              ${{ runner.os }}-build-
+              ${{ runner.os }}-
+      - 
+        name: "West Init"
+        run: "west init -l config"
+      - 
+        name: "West Update"
+        run: "west update"
+      - 
+        name: "West Zephyr export"
+        run: "west zephyr-export"
+      - 
+        name: "West Build (Jiran BLE Lite Left)"
         run: |
-		west build -s zmk/app -b jiran_ble_lite_left -- -DZMK_CONFIG=/github/workspace/config
-		cp build/zephyr/zmk.uf2 jiran_ble_lite_left.uf2
-      
-      - name: West Build (Jiran BLE Lite Right)
-        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
+            west build -s zmk/app -b jiran_ble_lite_left -- -DZMK_CONFIG=/github/workspace/config
+            cp build/zephyr/zmk.uf2 jiran_ble_lite_left.uf2
+      - 
+        name: "West Build (Jiran BLE Lite Right)"
         run: |
-		west build --pristine -s zmk/app -b jiran_ble_lite_right -- -DZMK_CONFIG=/github/workspace/config
-		cp build/zephyr/zmk.uf2 jiran_ble_lite_right.uf2
-
-      - name: Archive
+            west build --pristine -s zmk/app -b jiran_ble_lite_right -- -DZMK_CONFIG=/github/workspace/config
+            cp build/zephyr/zmk.uf2 jiran_ble_lite_right.uf2
+        uses: "docker://zmkfirmware/zephyr-west-action-arm:latest"
+      - 
+        name: Archive
         uses: actions/upload-artifact@v2
-        with:
+        with: 
           name: firmware
-          path: |
-		jiran_ble_lite_right.uf2
-		jiran_ble_lite_left.uf2 
+          path: "jiran_ble_lite_right.uf2\n\
+              jiran_ble_lite_left.uf2 "
+    strategy: 
+      fail-fast: false
+      matrix: "${{fromJson(needs.matrix.outputs.matrix)}}"
+  matrix: 
+    name: "Fetch Build Keyboards"
+    outputs: 
+      matrix: "${{ steps.set-matrix.outputs.matrix }}"
+    runs-on: ubuntu-latest
+    steps: 
+      - 
+        name: Checkout
+        uses: actions/checkout@v2
+      - 
+        name: "Install yaml2json"
+        run: "python3 -m pip install remarshal"
+      - 
+        id: set-matrix
+        name: "Fetch Build Matrix"
+        run: |
+            matrix=$(yaml2json build.yaml | jq -c .)
+            yaml2json build.yaml
+            echo "::set-output name=matrix::${matrix}"
+name: Build
+true: 
+  - push
+  - pull_request
+  - workflow_dispatch
