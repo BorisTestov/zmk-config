@@ -37,6 +37,7 @@ jobs:
         run: |
             mkdir -p /__w/zmk-config/zmk-config/tools/uf2/utils/
             cp uf2conv.py /__w/zmk-config/zmk-config/tools/uf2/utils/uf2conv.py
+            cp uf2families.json /__w/zmk-config/zmk-config/tools/uf2/utils/uf2families.json
       - name: West Build (Jiran BLE Lite Left)
         run: |
             pwd
