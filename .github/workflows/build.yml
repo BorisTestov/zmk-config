@@ -8,8 +8,6 @@ jobs:
     container:
       image: zmkfirmware/zmk-build-arm:stable
     name: Build
-    strategy:
-      fail-fast: false
     steps:
       - name: Checkout
         uses: actions/checkout@v2
