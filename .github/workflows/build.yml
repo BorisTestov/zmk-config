@@ -75,7 +75,6 @@ jobs:
             cp build/zephyr/zmk.uf2 jiran_ble_lite_left.uf2
       
       - name: West Build (Jiran BLE Lite Right)
-        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
         run: |
             west build --pristine -s zmk/app -b jiran_ble_lite_right -- -DZMK_CONFIG=/github/workspace/config
             cp build/zephyr/zmk.uf2 jiran_ble_lite_right.uf2
