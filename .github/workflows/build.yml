@@ -35,9 +35,8 @@ jobs:
         run: west zephyr-export
       - name: Fix UF2
         run: |
-            apt install -y curl
             mkdir -p /__w/zmk-config/zmk-config/tools/uf2/utils/
-            curl https://raw.githubusercontent.com/microsoft/uf2/master/utils/uf2conv.py > /__w/zmk-config/zmk-config/tools/uf2/utils/uf2conv.py
+            cp uf2conv.py /__w/zmk-config/zmk-config/tools/uf2/utils/uf2conv.py
       - name: West Build (Jiran BLE Lite Left)
         run: |
             pwd
