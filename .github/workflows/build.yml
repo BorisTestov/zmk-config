@@ -36,12 +36,12 @@ jobs:
 
       - name: West Build (Jiran BLE Lite Left)
         run: |
-            west build -s zmk/app -b jiran_ble_lite_left -- -DZMK_CONFIG=${GITHUB_WORKSPACE}/config
+            west build -s zmk/app -b jiran_ble_lite_left -- -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
             cp build/zephyr/zmk.uf2 jiran_ble_lite_left.uf2
       
       - name: West Build (Jiran BLE Lite Right)
         run: |
-            west build --pristine -s zmk/app -b jiran_ble_lite_right -- -DZMK_CONFIG=${GITHUB_WORKSPACE}/config
+            west build --pristine -s zmk/app -b jiran_ble_lite_right -- -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
             cp build/zephyr/zmk.uf2 jiran_ble_lite_right.uf2
 
       - name: Archive
