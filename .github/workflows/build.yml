@@ -36,6 +36,8 @@ jobs:
 
       - name: West Build (Jiran BLE Lite Left)
         run: |
+            pwd
+            ls /__w/zmk-config/zmk-config/zephyr/../tools/uf2/utils/
             west build -s zmk/app -b jiran_ble_lite_left -- -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
             cp build/zephyr/zmk.uf2 jiran_ble_lite_left.uf2
       
